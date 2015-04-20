@@ -32,12 +32,12 @@
  }
  
  ArrayList<RouteCircle> circles = new ArrayList<RouteCircle>();
-   boolean colour = false;
-   float growing_step = 1;
-   float birth_step = 15;
-   int maxRad = 400;
+   boolean colour = false; // якщо встіновити цю змінну true - то колі будуть чорні, а як ні - то білі
+   float growing_step = 1; 
+   float birth_step = 15; //якщо поміняти це значення -зміниться відстань між колами
+   int maxRad = 400; // якщо поміняти це - зміниться діаметр найбільшого кола
    int birth_count = 0;
-   float weight = 2;
+   float weight = 2; // якщо колі білі - то ця змінна відповідає за ширину контура кола
 
 
 void setup() {

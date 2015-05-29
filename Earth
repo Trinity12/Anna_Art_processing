@@ -1,31 +1,39 @@
 class Line 
 {
-  float weight;
-  float coord_x, coord_y;
-  float heig = 1;
+  float len;
+  float coord_x_a, coord_y, coord_x_b;
+  float heig = 0.2;
+  float corner = 0;
 
-  Line(float weight, float x, float y) 
+  Line(float weight, float x, float y, float c) 
   {
-    this.weight = weight;
-    this.coord_y = y + heig/2;
-    this.coord_x = x - weight/2;
+    this.len = weight;
+    this.coord_y = y;
+    this.coord_x_a = x - len/2;
+    this.coord_x_b = x + len/2;
+    corner = c;
     this.Drawing();
   }
 
   void Drawing() 
   {
-    fill(0);
-    rect(coord_x,coord_y,weight,heig);
+    rotate(corner);
+    strokeWeight(heig);
+    line(coord_x_a,coord_y,coord_x_b,coord_y);
+  }
+  
+  void Change_corner(float c) {
+    corner = c;
   }
 }
 
 ArrayList<Line> line_array = new ArrayList<Line>();
 
-void new_ellipse(float begin_x, float begin_y, float rad) 
+void new_ellipse(float begin_x, float begin_y, float rad,float corner) 
 {
   int start_t = millis();
  // float rad = 300;//random(200,350);
-  line_array.add(new Line(rad * 2,begin_x, begin_y));
+  line_array.add(new Line(rad * 2,begin_x, begin_y,corner));
   float sin = 0, line_rad = 0;
   float step = rad / 18;
   for (float place_up = begin_x + step, place_down = begin_x - step;
@@ -33,70 +41,86 @@ void new_ellipse(float begin_x, float begin_y, float rad)
     place_up += step, place_down -= step, sin += 0.1) 
   {
     line_rad = 2 * rad * cos(asin(sin));
-    line_array.add(new Line(line_rad, begin_y,  place_up ));
-    line_array.add(new Line(line_rad, begin_y, place_down));
+    line_array.add(new Line(line_rad, begin_y,  place_up, corner ));
+    line_array.add(new Line(line_rad, begin_y, place_down, corner));
   }
 }
+
+float step = 5;
 
 void setup() 
 {
   size(1000,800);
   smooth();
-  
+  //frameRate(1);
 }
 
 void draw() {
-  new_ellipse(300,300,150);
-  new_rect(500,500,100);
-  new_circle(150,150,100);
-  new_triangle(800,600,300);
-  new_trap(400,150,100);
+  new_ellipse(300,300,150,0);
+ new_rect(500,500,150,0);
+  new_circle(150,150,150,0);
+  new_triangle(800,600,150,0);
+  new_trap(400,150,150,0);
+  new_romb(400,200,100);
 }
 
-void new_rect(float begin_x, float begin_y, float rad) {
-  for (float place_y = begin_y; place_y > begin_y - rad; place_y -= rad/10) {
-    line_array.add(new Line(rad,begin_x,place_y));
+void new_rect(float begin_x, float begin_y, float rad, float corner) {
+  for (float place_y = begin_y; place_y > begin_y - rad; place_y -= step ) {
+    line_array.add(new Line(rad,begin_x,place_y,corner));
   }
 }
 
-void new_circle(float begin_x, float begin_y, float rad) 
+void new_circle(float begin_x, float begin_y, float rad,float corner) 
 {
   int start_t = millis();
  // float rad = 300;//random(200,350);
-  line_array.add(new Line(rad,begin_x, begin_y));
+  line_array.add(new Line(rad,begin_x, begin_y,corner));
   float sin = 0, line_rad = 0;
-  float step = rad / 18;
+  //float step = 3;//rad / 40;
   for (float place_up = begin_x + step, place_down = begin_x - step;
     (place_down > begin_x - rad) &&(place_up < begin_x + rad)&& (sin <= 1);
     place_up += step, place_down -= step, sin += 0.1) 
   {
     line_rad = rad * cos(asin(sin));
-    line_array.add(new Line(line_rad, begin_y,  place_up ));
-    line_array.add(new Line(line_rad, begin_y, place_down));
+    line_array.add(new Line(line_rad, begin_y,  place_up,corner ));
+    line_array.add(new Line(line_rad, begin_y, place_down,corner));
   }
 }
 
-void new_triangle(float begin_x, float begin_y, float head) 
+void new_triangle(float begin_x, float begin_y, float head,float corner) 
 {
-  line_array.add(new Line(1,begin_x,begin_y));
-  float step = head / 30; 
+  line_array.add(new Line(1,begin_x,begin_y,corner));
+ // float step = 3;//head / 60; 
   float rad = 0;
   for (float h = step, place_y = begin_y; h < head; h += step, place_y -=step) {
     rad = h * 2 / sqrt(3.0);
-    line_array.add(new Line(rad,begin_x,place_y));
+    line_array.add(new Line(rad,begin_x,place_y,corner));
   }
 }
 
-void new_trap(float begin_x, float begin_y, float head) 
+void new_trap(float begin_x, float begin_y, float head, float corner) 
 {
   //line_array.add(new Line(1,begin_x,begin_y));
-  float step = head / 30; 
+ // float step = 3;//head / 60; 
   float rad = 0;
   for (float h = head / 2, place_y = begin_y; h < head; h += step, place_y +=step) {
     rad = h * 2 / sqrt(3.0);
-    line_array.add(new Line(rad,begin_x,place_y));
+    line_array.add(new Line(rad,begin_x,place_y,corner));
   }
 }
+
+void new_romb (float begin_x, float begin_y, float head) {
+  line_array.add(new Line(head*2/sqrt(3.0),begin_x,begin_y,PI/2));
+  float rad = 0;
+  for (float place_up = begin_x + step, place_down = begin_x - step, hed = head;
+    (place_down > begin_x - rad) &&(place_up < begin_x + rad);
+    place_up += step, place_down -= step, hed -= step) {
+      rad = hed * 2 / sqrt(3.0);
+    line_array.add(new Line(rad,place_up,begin_y,PI/2));
+    line_array.add(new Line(rad,place_down,begin_y,PI/2));
+    }
+}
+
 
 
 
